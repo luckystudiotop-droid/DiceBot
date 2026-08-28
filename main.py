@@ -18,6 +18,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import Command, CommandObject
 from aiogram.types import Message
+from aiohttp import web
 
 # ---------------------------------------------------------------------------
 # 1. Логика подсчёта очков (scoring)
@@ -217,7 +218,24 @@ def display_name(message: Message) -> str:
 
 
 # Служебные команды
+async def handle_ping(request):
+  return web.Response(text="OK")
 
+
+async def main() -> None:
+  logger.info("Бот запускается...")
+
+  # Фейковый сервер для обмана health-check на Render
+  app = web.Application()
+  app.router.add_get("/", handle_ping)
+  runner = web.AppRunner(app)
+  await runner.setup()
+  port = int(os.environ.get("PORT", 8080))
+  site = web.TCPSite(runner, "0.0.0.0", port)
+  await site.start()
+
+  # Запуск поллинга бота
+  await dp.start_polling(bot)
 
 @dp.message(Command("start"))
 async def cmd_start(message: Message) -> None:
