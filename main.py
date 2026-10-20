@@ -195,7 +195,7 @@ def display_name(message: Message) -> str:
 
 @dp.message(Command("start"))
 async def cmd_start(message: Message) -> None:
-    await message.answer("бот работает 🎲")
+    await message.answer("✅ Бот работает")
 
 
 @dp.message(Command("help"))
